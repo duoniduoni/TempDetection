@@ -1,9 +1,58 @@
 db_user
+SELECT UserPassword,Domain FROM db_user where UserName='"+StrName+"'
+update db_user set UserPassword='"+StrPass+"',Domain="+StrDomain+" where UserName='"+StrName+"'
+INSERT INTO db_user(UserName,UserPassword,Domain) VALUES('"+StrName+"','"+StrPass+"',"+StrDomain+")
+字段推测：
+UserName        String
+UserPassword    String
+Domain          tinyint
+
 DB_Record
+INSERT INTO DB_Record (StartTime) VALUES('"+S_Time+"')
+select RecordID from DB_Record order by RecordID desc limit 0,1
+UPDATE DB_Record SET EndTime='"+e_time+"' WHERE RecordID="+RecordID
+字段推测：
+RecordID       主键 自动增长 
+StartTime
+EndTime
+
 db_reader_position
+SELECT ID,Position,HighTemp,LowTemp FROM db_reader_position order by ID;
+UPDATE db_reader_position SET Position='"+Positon+"' WHERE ReaderID="+ReaderID
+UPDATE db_reader_position SET HighTemp='"+HighTemp+"',LowTemp='"+LowTemp+"' WHERE ReaderID="+ReaderID
+字段推测：
+ID            tinyint
+Position      String
+HighTemp      tinyint
+LowTemp       tinyint
+ReaderID      tinyint
+
 db_sensor_position
+SELECT ID,Position,Power FROM db_sensor_position order by ID;
+UPDATE db_sensor_position SET Position='"+Positon+"' WHERE ReaderID='"+ReaderID+"' and AntID='"+AntID+"' and SensorID='"+SensorID+"'
+UPDATE db_sensor_position SET Position='"+Power+"' WHERE ReaderID='"+ReaderID+"' and AntID='"+AntID+"' and SensorID='"+SensorID+"'
+字段推测：
+ID            tinyint
+Position      String
+Power         tinyint
+ReaderID      String
+AntID         String
+SensorID      String
+
 DB_Data
-
-
+SELECT Temperature,RecordTime FROM DB_Data where ReaderID='"+strReader+"' and AntID='"+AntID+"' and SensorID='"+SensorID+"' and RecordTime<"+StrStopTime+" and RecordTime>"+StrStartTime+" and (Notes='����' or Notes='����') order by DataID;
+SELECT Temperature,RecordTime FROM DB_Data where ReaderID='"+strReader+"' and AntID='"+AntID+"' and SensorID='"+SensorID+"' and RecordTime<"+StrStopTime+" and RecordTime>"+StrStartTime+" and (Notes='����' or Notes='����') order by DataID;
+INSERT INTO DB_Data (RecordID,ReaderID,AntID,SensorID,Temperature,RFPower,Frequency,RecordTime,Notes) VALUES('"+RecordID+"','"+ReaderID+"','"+AntID+"','"+SensorID+"','"+Temperature+"','"+RFPower+"','"+Frequency+"','"+RecordTime+"','"+Notes+"')
+字段推测：
+DataID        tinyint
+Notes         String
+RecordTime    longint   
+ReaderID      String
+AntID         String
+SensorID      String
+Temperature   String
+RFPower       String
+Frequency     String
+RecordID      String
 
 m_pConnection->Open("Driver=MySQL ODBC 5.1 Driver;Server=127.0.0.1;Database=sawdb","root","123456",adModeUnknown);
