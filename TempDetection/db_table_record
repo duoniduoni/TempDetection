@@ -4,3 +4,6 @@ db_reader_position
 db_sensor_position
 DB_Data
 
+
+
+m_pConnection->Open("Driver=MySQL ODBC 5.1 Driver;Server=127.0.0.1;Database=sawdb","root","123456",adModeUnknown);
