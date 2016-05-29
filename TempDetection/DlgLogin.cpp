@@ -48,7 +48,14 @@ void CDlgLogin::OnBnClickedButtonLogin()
 	_bstr_t bstrSQL ="SELECT UserPassword,Domain FROM db_user where UserName='"+StrName+"'";
 	_RecordsetPtr m_pRecordset1;
 	m_pRecordset1.CreateInstance(__uuidof(Recordset));
-	m_pRecordset1->Open(bstrSQL,m_pConnection.GetInterfacePtr(),adOpenDynamic,adLockOptimistic,adCmdText);
+	try
+	{
+		m_pRecordset1->Open(bstrSQL,m_pConnection.GetInterfacePtr(),adOpenDynamic,adLockOptimistic,adCmdText);
+	}
+	catch (_com_error e)
+	{
+		AfxMessageBox(e.Description());
+	}
 	if(!m_pRecordset1->adoEOF)
 	{
 		CString pass=m_pRecordset1->GetCollect("UserPassword");
