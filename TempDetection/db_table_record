@@ -21,11 +21,11 @@ SELECT ID,Position,HighTemp,LowTemp FROM db_reader_position order by ID;
 UPDATE db_reader_position SET Position='"+Positon+"' WHERE ReaderID="+ReaderID
 UPDATE db_reader_position SET HighTemp='"+HighTemp+"',LowTemp='"+LowTemp+"' WHERE ReaderID="+ReaderID
 字段推测：
-ID            tinyint
+ID            int	primary key
 Position      String
 HighTemp      tinyint
 LowTemp       tinyint
-ReaderID      tinyint
+ReaderID      int
 
 db_sensor_position
 SELECT ID,Position,Power FROM db_sensor_position order by ID;
@@ -35,9 +35,9 @@ UPDATE db_sensor_position SET Position='"+Power+"' WHERE ReaderID='"+ReaderID+"'
 ID            tinyint
 Position      String
 Power         tinyint
-ReaderID      String
-AntID         String
-SensorID      String
+ReaderID      int
+AntID         int
+SensorID      int
 
 DB_Data
 SELECT Temperature,RecordTime FROM DB_Data where ReaderID='"+strReader+"' and AntID='"+AntID+"' and SensorID='"+SensorID+"' and RecordTime<"+StrStopTime+" and RecordTime>"+StrStartTime+" and (Notes='����' or Notes='����') order by DataID;

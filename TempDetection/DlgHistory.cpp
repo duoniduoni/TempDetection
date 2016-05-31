@@ -24,7 +24,7 @@ CDlgHistory::CDlgHistory()
 	if(!app.CreateDispatch("Excel.Application"))   
     {  
 		AfxMessageBox("无法启动Excel服务!"); 
-		GetDlgItem(IDC_BUTTON_EXPORT)->EnableWindow(TRUE); 
+		//GetDlgItem(IDC_BUTTON_EXPORT)->EnableWindow(TRUE); 
 	}
 }
 
@@ -96,7 +96,7 @@ BOOL CDlgHistory::OnInitDialog()
 	CComboBox*   pComb_Reader   =   (CComboBox*)GetDlgItem(IDC_COMBO_READER);   
 	ASSERT(pComb_Reader);   
 	pComb_Reader->SetCurSel(nIndexReader);
-	
+
 	return TRUE;  // return TRUE unless you set the focus to a control
 	// 异常: OCX 属性页应返回 FALSE
 }

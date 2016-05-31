@@ -337,10 +337,12 @@ int CMainFrame::OnCreate(LPCREATESTRUCT lpCreateStruct)
 	//lstBasicCommands.AddTail(ID_VIEW_APPLOOK_WINDOWS_7);
 
 	//CMFCToolBar::SetBasicCommands(lstBasicCommands);
+	
 	if(!m_MSComm.Create(NULL,0,CRect(0,0,0,0),this,IDC_MSCOMM1)) 
 	{ 
 		AfxMessageBox( "´´½¨¿Ø¼þÊ§°Ü "); 
 	} 
+	
 	HMODULE Positionmodule = GetModuleHandle(0); 
 	char pPositionFileName[MAX_PATH]; 
 	GetModuleFileName(Positionmodule, pPositionFileName, MAX_PATH); 
@@ -813,7 +815,7 @@ void CMainFrame::CreateDataBase(void)
 	m_pConnection.CreateInstance(__uuidof(Connection));
 	try
 	{
-		m_pConnection->Open("Driver=MySQL ODBC 5.1 Driver;Server=127.0.0.1;Database=sawdb","root","123456",adModeUnknown);
+		m_pConnection->Open("Driver=MySQL ODBC 5.3 Unicode Driver;Server=127.0.0.1;Database=sawdb","root","123456",adModeUnknown);
 	}
 	catch (_com_error e)
 	{
@@ -1620,7 +1622,14 @@ void CMainFrame::ReadPositionFromDB(void)
 	_bstr_t bstrSQLReader ="SELECT ID,Position,HighTemp,LowTemp FROM db_reader_position order by ID;";
 	_RecordsetPtr m_pRecordReader;
 	m_pRecordReader.CreateInstance(__uuidof(Recordset));
-	m_pRecordReader->Open(bstrSQLReader,m_pConnection.GetInterfacePtr(),adOpenDynamic,adLockOptimistic,adCmdText);
+	try
+	{
+		m_pRecordReader->Open(bstrSQLReader,m_pConnection.GetInterfacePtr(),adOpenDynamic,adLockOptimistic,adCmdText);
+	}
+	catch (_com_error e)
+	{
+		AfxMessageBox(e.Description());
+	}
 	while(!m_pRecordReader->adoEOF)
 	{
 		strID=(LPCSTR)(_bstr_t)m_pRecordReader->GetCollect("ID");
@@ -1643,7 +1652,14 @@ void CMainFrame::ReadPositionFromDB(void)
 	_bstr_t bstrSQLSensor ="SELECT ID,Position,Power FROM db_sensor_position order by ID;";
 	_RecordsetPtr m_pRecordSensor;
 	m_pRecordSensor.CreateInstance(__uuidof(Recordset));
-	m_pRecordSensor->Open(bstrSQLSensor,m_pConnection.GetInterfacePtr(),adOpenDynamic,adLockOptimistic,adCmdText);
+	try
+	{
+		m_pRecordSensor->Open(bstrSQLSensor,m_pConnection.GetInterfacePtr(),adOpenDynamic,adLockOptimistic,adCmdText);
+	}
+	catch (_com_error e)
+	{
+		AfxMessageBox(e.Description());
+	}
 	while(!m_pRecordSensor->adoEOF)
 	{
 		CString strPositon=(LPCSTR)(_bstr_t)m_pRecordSensor->GetCollect("Position");
