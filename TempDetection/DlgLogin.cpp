@@ -87,7 +87,7 @@ BOOL CDlgLogin::OnInitDialog()
 	m_pConnection.CreateInstance(__uuidof(Connection));
 	try
 	{
-		m_pConnection->Open("Driver=MySQL ODBC 5.3 Unicode Driver;Server=localhost;Database=sawdb","root","123456",adModeUnknown);
+		m_pConnection->Open("Driver=MySQL ODBC 5.3 Unicode Driver;Server=localhost;Database=sawdb2","root","123456",adModeUnknown);
 	}
 	catch (_com_error e)
 	{

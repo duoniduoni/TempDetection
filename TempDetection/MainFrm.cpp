@@ -815,7 +815,7 @@ void CMainFrame::CreateDataBase(void)
 	m_pConnection.CreateInstance(__uuidof(Connection));
 	try
 	{
-		m_pConnection->Open("Driver=MySQL ODBC 5.3 Unicode Driver;Server=127.0.0.1;Database=sawdb","root","123456",adModeUnknown);
+		m_pConnection->Open("Driver=MySQL ODBC 5.3 Unicode Driver;Server=127.0.0.1;Database=sawdb2","root","123456",adModeUnknown);
 	}
 	catch (_com_error e)
 	{
