@@ -665,7 +665,7 @@ void CMainFrame::OnComm()
 }
 void CMainFrame::showData(char index , int len)
 {
-	CString tmp("\0"),battery,tmp_data;
+	CString tmp("12345678"),battery,tmp_data;
 	WORD RecvCRC = 0;
 	unsigned char RecvData[15]={0}, m_Data[5000] = {0};
 	int index_id =0 , begin_index = 0 ,data_index = 0,data_index_second = 0;
@@ -709,7 +709,7 @@ void CMainFrame::showData(char index , int len)
 		m_tempData[index].Temp[data_index_second] = 0xffff&m_Data[begin_index+1]+((0xffff&m_Data[begin_index])<<8);
 		m_tempData[index].battery_level[data_index_second] = m_Data[begin_index+2];
 		m_tempData[index].Power[data_index_second] = 0xffff&m_Data[begin_index+4]+((0xffff&m_Data[begin_index+3])<<8);
-		tmp.Empty();
+//		tmp.Empty();
 		begin_index+=5;
 	}
 	COnDrawView *pViewMainShow=(COnDrawView*)m_wndSplitter.GetPane(0,1);
@@ -760,7 +760,7 @@ void CMainFrame::showData(char index , int len)
 		default:
 			break;
 		}
-		tmp.Empty();
+//		tmp.Empty();
 		battery.Empty();
 	}
 }
