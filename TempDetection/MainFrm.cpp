@@ -697,6 +697,8 @@ void CMainFrame::showData(char index , int len)
 
 	m_tempData[index].PANID=0xffff&m_Data[1]+((0xffff&m_Data[0])<<8);
 	begin_index=2;
+
+	/*
 	//pair<map<CString, int>::iterator, bool> ret;  
 	while(begin_index < data_index)
 	{
@@ -715,11 +717,35 @@ void CMainFrame::showData(char index , int len)
 //		tmp.Empty();
 		begin_index+=5;
 	}
+	*/
+	for(int sensor_index = 0; sensor_index < data_index / 14; sensor_index ++)
+	{
+		m_tempData[index].dataFlag[sensor_index] = m_Data[begin_index];
+		begin_index += 1;
+
+		CString tmp_addr("12345678");
+		for(int i =0;i<8;i++)
+		{
+			tmp_addr.SetAt(i,m_Data[begin_index + i]);
+		}
+		m_tempData[index].mac_address[sensor_index] = tmp;
+		begin_index += 8;
+
+		m_tempData[index].Temp[sensor_index] = 0xffff&m_Data[begin_index+1]+((0xffff&m_Data[begin_index])<<8);
+		begin_index += 2;
+
+		m_tempData[index].battery_level[sensor_index] = m_Data[begin_index];
+		begin_index += 1;
+
+		m_tempData[index].Power[sensor_index] = 0xffff&m_Data[begin_index+1]+((0xffff&m_Data[begin_index])<<8);
+		begin_index += 2;
+	}
+
 	COnDrawView *pViewMainShow=(COnDrawView*)m_wndSplitter.GetPane(0,1);
 	int power_value,dataCount,pageFlagCount;
 	for(int i=0;i<100;i++)
 	{
-		if(0!=m_tempData[index].dataFlag[i])
+		if(0!=m_tempData[index].dataFlag[i]/* && 1!=m_tempData[index].dataFlag[i]*/)
 			continue;
 		if(m_tempData[index].Power[i] < -87)
 			power_value=0;
@@ -737,25 +763,25 @@ void CMainFrame::showData(char index , int len)
 		switch(pageFlagCount)
 		{
 		case 0:
-			battery.Format(_T("%s"),m_tempData[index].battery_level[i]);
+			battery.Format(_T("%d"),m_tempData[index].battery_level[i]);
 			pViewMainShow->pSheet->pDlgMainShow->v_Power[dataCount]->CTChart::Series(0).GetAsLinearGauge().SetValue(power_value);
 			pViewMainShow->pSheet->pDlgMainShow->v_Temp[dataCount]->CTChart::Series(0).GetAsNumericGauge().SetValue(m_tempData[index].Temp[i]);
 			pViewMainShow->pSheet->pDlgMainShow->v_Title[dataCount]->put_TitleText("÷’∂À"+tmp+"£∫"+battery+"%");
 			break;
 		case 1:
-			battery.Format(_T("%s"),m_tempData[index].battery_level[i]);
+			battery.Format(_T("%d"),m_tempData[index].battery_level[i]);
 			pViewMainShow->pSheet->pDlgMainShow1->v_Power[dataCount]->CTChart::Series(0).GetAsLinearGauge().SetValue(power_value);
 			pViewMainShow->pSheet->pDlgMainShow1->v_Temp[dataCount]->CTChart::Series(0).GetAsNumericGauge().SetValue(m_tempData[index].Temp[i]);
 			pViewMainShow->pSheet->pDlgMainShow1->v_Title[dataCount]->put_TitleText("÷’∂À"+tmp+"£∫"+battery+"%");
 			break;
 		case 2:
-			battery.Format(_T("%s"),m_tempData[index].battery_level[i]);
+			battery.Format(_T("%d"),m_tempData[index].battery_level[i]);
 			pViewMainShow->pSheet->pDlgMainShow2->v_Power[dataCount]->CTChart::Series(0).GetAsLinearGauge().SetValue(power_value);
 			pViewMainShow->pSheet->pDlgMainShow2->v_Temp[dataCount]->CTChart::Series(0).GetAsNumericGauge().SetValue(m_tempData[index].Temp[i]);
 			pViewMainShow->pSheet->pDlgMainShow2->v_Title[dataCount]->put_TitleText("÷’∂À"+tmp+"£∫"+battery+"%");
 			break;
 		case 3:
-			battery.Format(_T("%s"),m_tempData[index].battery_level[i]);
+			battery.Format(_T("%d"),m_tempData[index].battery_level[i]);
 			pViewMainShow->pSheet->pDlgMainShow3->v_Power[dataCount]->CTChart::Series(0).GetAsLinearGauge().SetValue(power_value);
 			pViewMainShow->pSheet->pDlgMainShow3->v_Temp[dataCount]->CTChart::Series(0).GetAsNumericGauge().SetValue(m_tempData[index].Temp[i]);
 			pViewMainShow->pSheet->pDlgMainShow3->v_Title[dataCount]->put_TitleText("÷’∂À"+tmp+"£∫"+battery+"%");
