@@ -59,7 +59,8 @@ public:
 		CString mac_address[100];
 		char battery_level[100];
 		int Power[100];
-	}m_tempData[200];
+	}m_tempData[200] /*200 xie tiao qi*/;
+
 	_variant_t RecordsAffected;
 	CStringArray dbtables;
 	_RecordsetPtr m_pRecordset;

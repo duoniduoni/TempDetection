@@ -685,13 +685,16 @@ void CMainFrame::showData(char index , int len)
 	begin_index=0;
 	while (begin_index < len)
 	{
-		m_Data[data_index++] = rxdata[begin_index+=5];
+		begin_index+=5;         //jump to data
+
 		for(int i=0;i<8;i++)
 		{
 			m_Data[data_index++] = rxdata[begin_index++];
 		}
-		begin_index+=2;
+
+		begin_index+=2;         //jump over CRC
 	}
+
 	m_tempData[index].PANID=0xffff&m_Data[1]+((0xffff&m_Data[0])<<8);
 	begin_index=2;
 	//pair<map<CString, int>::iterator, bool> ret;  
