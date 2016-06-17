@@ -650,8 +650,8 @@ void CMainFrame::OnComm()
 					//	count = 0xffff&rxdata[3]+((0xffff&rxdata[2])<<8);
 					//	frame = (0xffff&rxdata[4])<<8;
 					//}
-					temp.Format(("%d"),rxdata[intRDC-11]);
-					if(temp.Left(1) == '1')
+					
+					if(rxdata[intRDC-11 - 1] & 0x08)
 					{
 						showData(rxdata[0],intRDC);
 						//m_AllReceiveData[rxdata[0]].Empty();
@@ -667,7 +667,10 @@ void CMainFrame::showData(char index , int len)
 {
 	CString tmp("12345678"),battery,tmp_data;
 	WORD RecvCRC = 0;
-	unsigned char RecvData[15]={0}, m_Data[5000] = {0};
+	unsigned char RecvData[15]={0};
+	unsigned char *m_Data = new unsigned char[5000];
+	memset(m_Data, 0, 5000);
+
 	int index_id =0 , begin_index = 0 ,data_index = 0,data_index_second = 0;
 	while(begin_index < len)
 	{
@@ -792,6 +795,8 @@ void CMainFrame::showData(char index , int len)
 //		tmp.Empty();
 		battery.Empty();
 	}
+
+	delete []m_Data;
 }
 
 int CMainFrame::getPageCount()
