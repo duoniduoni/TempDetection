@@ -14,6 +14,12 @@
 
 # define TIMER_ACCURACY 1 
 
+#ifdef DEBUG
+    # define MYSQL_DRIVER "Driver=MySQL ODBC 5.3 Unicode Driver;Server=localhost;Database=sawdb2"
+#else
+    # define MYSQL_DRIVER "Driver=MySQL ODBC 5.3 Unicode Driver;Server=localhost;Database=sawdb2"
+#endif
+
 class CCommSplitWnd : public CSplitterWnd
 {
 	DECLARE_DYNAMIC(CCommSplitWnd)
