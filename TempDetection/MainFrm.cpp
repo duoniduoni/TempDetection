@@ -632,6 +632,11 @@ void CMainFrame::OnComm()
 			for(LONG k=0;k<len;k++)
 				safearray_inp.GetElement(&k,&rxdata[k+intRDC]);
 			safearray_inp.Clear();
+
+			CString dbgInfo;
+			dbgInfo.Format("zhangsong: recv data len is %d", len);
+			OutputDebugString(dbgInfo);
+
 			intRDC+=len;
 			if (intRDC>=15)
 			{
