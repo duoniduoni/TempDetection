@@ -93,8 +93,8 @@ void CCommEdit::OnBnClickedButtonOpenPort()
 
 	pMain->m_MSComm.SetCommPort(nIndex_comm+1);		
 	pMain->m_MSComm.SetInputMode(1);				
-	pMain->m_MSComm.SetInBufferSize(2048);			
-	pMain->m_MSComm.SetOutBufferSize(512);		    
+	pMain->m_MSComm.SetInBufferSize(20480);			
+	pMain->m_MSComm.SetOutBufferSize(5120);		    
 	pMain->m_MSComm.SetInputLen(0);				   
 	pMain->m_MSComm.SetRThreshold(1);				
 	pMain->m_MSComm.SetSettings(m_baud+",n,8,1");  
