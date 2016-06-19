@@ -17,7 +17,7 @@
 #ifdef DEBUG
     # define MYSQL_DRIVER "Driver=MySQL ODBC 5.3 Unicode Driver;Server=localhost;Database=sawdb2"
 #else
-    # define MYSQL_DRIVER "Driver=MySQL ODBC 5.3 Unicode Driver;Server=localhost;Database=sawdb2"
+    # define MYSQL_DRIVER "Driver=MySQL ODBC 5.1 Driver;Server=127.0.0.1;Database=sawdb2"
 #endif
 
 class CCommSplitWnd : public CSplitterWnd
