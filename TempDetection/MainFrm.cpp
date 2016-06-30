@@ -656,8 +656,12 @@ void CMainFrame::OnComm()
 					//	count = 0xffff&rxdata[3]+((0xffff&rxdata[2])<<8);
 					//	frame = (0xffff&rxdata[4])<<8;
 					//}
-					
-					if(rxdata[intRDC-11 - 1] & 0x10)
+
+					//靠靠靠
+					int lastFrameIndex = intRDC - 15;
+					char flagOfEndFrame = rxdata[lastFrameIndex + 4];
+
+					if(flagOfEndFrame & 0x80)
 					{
 						showData(rxdata[0],intRDC);
 						//m_AllReceiveData[rxdata[0]].Empty();
@@ -669,6 +673,7 @@ void CMainFrame::OnComm()
 		}
 	} 
 }
+
 void CMainFrame::showData(char index , int len)
 {
 	CString tmp("12345678"),battery,tmp_data;
@@ -728,6 +733,13 @@ void CMainFrame::showData(char index , int len)
 
 		m_tempData[index].Power[sensor_index] = 0xffff&m_Data[begin_index+1]+((0xffff&m_Data[begin_index])<<8);
 		begin_index += 2;
+
+		//here, insert data into database
+		DisturbData(index, (char)0, (char)sensor_index, 
+			m_tempData[index].Temp[sensor_index],
+			m_tempData[index].Power[sensor_index],
+			m_tempData[index].battery_level[sensor_index],
+			m_tempData[index].dataFlag[sensor_index]);
 	}
 
 	COnDrawView *pViewMainShow=(COnDrawView*)m_wndSplitter.GetPane(0,1);
@@ -1082,9 +1094,9 @@ void CMainFrame::DisturbData(char Reader,char Ant,char Sensor,int Temp ,unsigned
 	strFreq.Format("%u",Frequence);
 	strTime.Format("%f",TimeNow);
 	if(DataFlag==0x01)
-		strDataFlag="能量低";
+		strDataFlag="超限";
 	else
-		strDataFlag="干扰";
+		strDataFlag="正常";
 	strReader.Format("读卡器%d",Reader),strAnt.Format("天线%d",Ant+1),strSensor.Format("传感器%d",Sensor+1);
 	InsertIntoData(RecordID,strReader,strAnt,strSensor,strTemp,strPower,strFreq,strTime,strDataFlag);
 	strPower.ReleaseBuffer();
