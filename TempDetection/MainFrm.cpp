@@ -656,8 +656,12 @@ void CMainFrame::OnComm()
 					//	count = 0xffff&rxdata[3]+((0xffff&rxdata[2])<<8);
 					//	frame = (0xffff&rxdata[4])<<8;
 					//}
+
+          //¿¿¿¿¿¿
+          int lastFrameIndex = intRDC - 15 - 1;
+          char flagOfEndFrame = rxdata[lastFrameIndex + 4];
 					
-					if(rxdata[intRDC-11 - 1] & 0x08)
+					if(flagOfEndFrame & 0x80)
 					{
 						showData(rxdata[0],intRDC);
 						//m_AllReceiveData[rxdata[0]].Empty();
@@ -669,6 +673,7 @@ void CMainFrame::OnComm()
 		}
 	} 
 }
+
 void CMainFrame::showData(char index , int len)
 {
 	CString tmp("12345678"),battery,tmp_data;
