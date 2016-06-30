@@ -732,6 +732,7 @@ void CMainFrame::showData(char index , int len)
 		begin_index+=5;
 	}
 	*/
+
 	for(int sensor_index = 0; sensor_index < data_index / 14; sensor_index ++)
 	{
 		m_tempData[index].dataFlag[sensor_index] = m_Data[begin_index];
@@ -754,6 +755,9 @@ void CMainFrame::showData(char index , int len)
 		m_tempData[index].Power[sensor_index] = 0xffff&m_Data[begin_index+1]+((0xffff&m_Data[begin_index])<<8);
 		begin_index += 2;
 	}
+
+  //here, insert data into database
+  //DisturbData(.........);
 
 	COnDrawView *pViewMainShow=(COnDrawView*)m_wndSplitter.GetPane(0,1);
 	int power_value,dataCount,pageFlagCount;
