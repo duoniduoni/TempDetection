@@ -92,7 +92,14 @@ BOOL CDlgHistory::OnInitDialog()
 	pComb_Ant->SetCurSel(nIndexAnt);
 	CComboBox*   pComb_Sensor   =   (CComboBox*)GetDlgItem(IDC_COMBO_SENSOR);   
 	ASSERT(pComb_Sensor);   
+	for(int i = 0; i < 100; i++)
+	{
+		CString tmp;
+		tmp.Format("%d", i+1);
+		pComb_Sensor->AddString(tmp);
+	}
 	pComb_Sensor->SetCurSel(nIndexSensor);
+	
 	CComboBox*   pComb_Reader   =   (CComboBox*)GetDlgItem(IDC_COMBO_READER);   
 	ASSERT(pComb_Reader);   
 	pComb_Reader->SetCurSel(nIndexReader);
