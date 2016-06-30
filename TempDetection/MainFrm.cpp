@@ -657,7 +657,7 @@ void CMainFrame::OnComm()
 					//	frame = (0xffff&rxdata[4])<<8;
 					//}
 					
-					if(rxdata[intRDC-11 - 1] & 0x08)
+					if(rxdata[intRDC-11 - 1] & 0x10)
 					{
 						showData(rxdata[0],intRDC);
 						//m_AllReceiveData[rxdata[0]].Empty();
@@ -707,26 +707,6 @@ void CMainFrame::showData(char index , int len)
 	m_tempData[index].PANID=0xffff&m_Data[1]+((0xffff&m_Data[0])<<8);
 	begin_index=2;
 
-	/*
-	//pair<map<CString, int>::iterator, bool> ret;  
-	while(begin_index < data_index)
-	{
-		begin_index++;
-		for(int i =0;i<8;i++)
-		{
-			tmp.SetAt(i,m_Data[begin_index++]);
-		}
-		m_MacAddress[index].insert(make_pair(tmp,index_id));
-		data_index_second = m_MacAddress[index][tmp];
-		m_tempData[index].dataFlag[data_index_second] = m_Data[begin_index-8];
-		m_tempData[index].mac_address[data_index_second] = tmp;
-		m_tempData[index].Temp[data_index_second] = 0xffff&m_Data[begin_index+1]+((0xffff&m_Data[begin_index])<<8);
-		m_tempData[index].battery_level[data_index_second] = m_Data[begin_index+2];
-		m_tempData[index].Power[data_index_second] = 0xffff&m_Data[begin_index+4]+((0xffff&m_Data[begin_index+3])<<8);
-//		tmp.Empty();
-		begin_index+=5;
-	}
-	*/
 	for(int sensor_index = 0; sensor_index < data_index / 14; sensor_index ++)
 	{
 		m_tempData[index].dataFlag[sensor_index] = m_Data[begin_index];
@@ -751,21 +731,10 @@ void CMainFrame::showData(char index , int len)
 	}
 
 	COnDrawView *pViewMainShow=(COnDrawView*)m_wndSplitter.GetPane(0,1);
+
 	int power_value,dataCount,pageFlagCount;
 	for(int i=0;i<100;i++)
 	{
-		if(0!=m_tempData[index].dataFlag[i]/* && 1!=m_tempData[index].dataFlag[i]*/)
-			continue;
-		if(m_tempData[index].Power[i] < -87)
-			power_value=0;
-		else if(m_tempData[index].Power[i] >= -87 && m_tempData[index].Power[i] < -77)
-			power_value =25;
-		else if(m_tempData[index].Power[i] >= -77 && m_tempData[index].Power[i] < -67)
-			power_value =50;
-		else if(m_tempData[index].Power[i] >= -67 && m_tempData[index].Power[i] < -57)
-			power_value =75;
-		else
-			power_value =100;
 		dataCount = i%25;
 		pageFlagCount = i/25;
 		tmp.Format(_T("%3d"),i+1);
@@ -790,10 +759,30 @@ void CMainFrame::showData(char index , int len)
 			break;
 		}
 
-		battery.Format(_T("%d"),m_tempData[index].battery_level[i]);
-		pTmpView->v_Power[dataCount]->CTChart::Series(0).GetAsLinearGauge().SetValue(power_value);
-		pTmpView->v_Temp[dataCount]->CTChart::Series(0).GetAsNumericGauge().SetValue((double)m_tempData[index].Temp[i] / 10);
-		pTmpView->v_Title[dataCount]->put_TitleText("ÖÕ¶Ë"+tmp+"£º"+battery+"%");
+		if(0==m_tempData[index].dataFlag[i])
+		{
+			if(m_tempData[index].Power[i] < -87)
+				power_value=0;
+			else if(m_tempData[index].Power[i] >= -87 && m_tempData[index].Power[i] < -77)
+				power_value =25;
+			else if(m_tempData[index].Power[i] >= -77 && m_tempData[index].Power[i] < -67)
+				power_value =50;
+			else if(m_tempData[index].Power[i] >= -67 && m_tempData[index].Power[i] < -57)
+				power_value =75;
+			else
+				power_value =100;
+
+			battery.Format(_T("%d"),m_tempData[index].battery_level[i]);
+			pTmpView->v_Power[dataCount]->CTChart::Series(0).GetAsLinearGauge().SetValue(power_value);
+			pTmpView->v_Temp[dataCount]->CTChart::Series(0).GetAsNumericGauge().SetValue((double)m_tempData[index].Temp[i] / 10);
+			pTmpView->v_Title[dataCount]->put_TitleText("ÖÕ¶Ë"+tmp+"£º"+battery+"%");
+		}
+		else if(1==m_tempData[index].dataFlag[i])
+		{
+			pTmpView->v_Power[dataCount]->CTChart::Series(0).GetAsLinearGauge().SetValue(0);
+			pTmpView->v_Temp[dataCount]->CTChart::Series(0).GetAsNumericGauge().SetValue(888.8);
+			pTmpView->v_Title[dataCount]->put_TitleText("Êý¾ÝÒì³£");
+		}
 
 //		tmp.Empty();
 		battery.Empty();
