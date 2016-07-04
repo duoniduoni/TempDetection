@@ -668,6 +668,7 @@ void CMainFrame::OnComm()
 						memset(rxdata,0,5000);
 					}
 					temp.Empty();
+					intRDC = 0;
 				}
 			}
 		}
@@ -690,6 +691,7 @@ void CMainFrame::showData(char index , int len)
 			RecvData[i] = rxdata[begin_index++];
 		}
 		RecvCRC=GetCheckCode(RecvData,13);
+
 		if ((RecvCRC&0x00ff)!=RecvData[14]||((RecvCRC&0xff00)>>8)!=RecvData[13])
 			return;
 		for(int i=0;i<15;i++)
@@ -795,6 +797,14 @@ void CMainFrame::showData(char index , int len)
 			pTmpView->v_Temp[dataCount]->CTChart::Series(0).GetAsNumericGauge().SetValue(888.8);
 			pTmpView->v_Title[dataCount]->put_TitleText("数据异常");
 		}
+		else
+		{
+			pTmpView->v_Power[dataCount]->CTChart::Series(0).GetAsLinearGauge().SetValue(0);
+			pTmpView->v_Temp[dataCount]->CTChart::Series(0).GetAsNumericGauge().SetValue(0);
+			pTmpView->v_Title[dataCount]->put_TitleText("没有数据");
+		}
+
+		pTmpView->Invalidate();
 
 //		tmp.Empty();
 		battery.Empty();
@@ -1076,6 +1086,7 @@ void CMainFrame::DisturbData(char Reader,char Ant,char Sensor,int Temp ,unsigned
 	CString strTemp,strFreq,strPower,strTime,strDataFlag,strReader,strAnt,strSensor;
 	double GetTemp;
 	double TimeNow=COleDateTime::GetCurrentTime();
+	/*
 	if (Temp&0x8000)
 	{
 		unsigned int temp1=(~Temp+1)&0x0000ffff;
@@ -1089,12 +1100,14 @@ void CMainFrame::DisturbData(char Reader,char Ant,char Sensor,int Temp ,unsigned
 		int tempdata=temp1%16;
 		GetTemp=(double)(temp1/16)+(double)tempdata/16;
 	}
+	*/
+	GetTemp = Temp;
 	strTemp.Format("%.1f",GetTemp);
 	strPower.Format("%d",Power);
 	strFreq.Format("%u",Frequence);
 	strTime.Format("%f",TimeNow);
 	if(DataFlag==0x01)
-		strDataFlag="超限";
+		strDataFlag="掉线";
 	else
 		strDataFlag="正常";
 	strReader.Format("读卡器%d",Reader),strAnt.Format("天线%d",Ant+1),strSensor.Format("传感器%d",Sensor+1);

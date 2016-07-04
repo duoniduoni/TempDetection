@@ -129,7 +129,7 @@ void CDlgHistory::OnBnClickedButtonSearch()
 	StrStartTime.Format("%f",m_DataBegin);
 	StrStopTime.Format("%f",m_DataEnding);
 
-	_bstr_t bstrSQLdata ="SELECT Temperature,RecordTime FROM DB_Data where ReaderID='"+strReader+"' and AntID='"+AntID+"' and SensorID='"+SensorID+"' and RecordTime<"+StrStopTime+" and RecordTime>"+StrStartTime+" and (Notes='正常' or Notes='超限') order by DataID;";
+	_bstr_t bstrSQLdata ="SELECT Temperature,RecordTime FROM DB_Data where ReaderID='"+strReader+"' and AntID='"+AntID+"' and SensorID='"+SensorID+"' and RecordTime<"+StrStopTime+" and RecordTime>"+StrStartTime+" and (Notes='正常') order by DataID;";
 	_RecordsetPtr m_pRecordsetch;
 	m_pRecordsetch.CreateInstance(__uuidof(Recordset));
 	m_pRecordsetch->Open(bstrSQLdata,m_pConnection.GetInterfacePtr(),adOpenDynamic,adLockOptimistic,adCmdText);
@@ -140,7 +140,7 @@ void CDlgHistory::OnBnClickedButtonSearch()
 			CString temper=(LPCSTR)(_bstr_t)m_pRecordsetch->GetCollect("Temperature");
 			CString time=(LPCSTR)(_bstr_t)m_pRecordsetch->GetCollect("RecordTime");
 			temper.ReleaseBuffer();
-			m_CtlChart.GetChannel(0).AddXY(atof(time), atof(temper));
+			m_CtlChart.GetChannel(0).AddXY(atof(time), atof(temper) / 10);
 			m_pRecordsetch->MoveNext();
 		}
 		GetDlgItem(IDC_BUTTON_SEARCH)->EnableWindow(TRUE);
