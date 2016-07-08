@@ -247,7 +247,7 @@ void CTempDetectionView::OnNMClickTreeWindows(NMHDR *pNMHDR, LRESULT *pResult)
 	{
 		IntUSR=atoi(str);
 		pMain->ShowPosition(IntUSR-1,TRUE);
-		pMain->OnRefresh();
+		//pMain->OnRefresh();
 		pMain->ShowAllLastData();
 		GetDlgItem(IDC_STATIC_SHOW_SELECT)->SetWindowText("µ±«∞œ‘ æ:"+strSelect);
 	}else

@@ -675,74 +675,9 @@ void CMainFrame::OnComm()
 	} 
 }
 
-void CMainFrame::showData(char index , int len)
+void CMainFrame::displayData(int index)
 {
 	CString tmp("12345678"),battery,tmp_data;
-	WORD RecvCRC = 0;
-	unsigned char RecvData[15]={0};
-	unsigned char *m_Data = new unsigned char[5000];
-	memset(m_Data, 0, 5000);
-
-	int index_id =0 , begin_index = 0 ,data_index = 0,data_index_second = 0;
-	while(begin_index < len)
-	{
-		for(int i =0;i<15;i++)
-		{
-			RecvData[i] = rxdata[begin_index++];
-		}
-		RecvCRC=GetCheckCode(RecvData,13);
-
-		if ((RecvCRC&0x00ff)!=RecvData[14]||((RecvCRC&0xff00)>>8)!=RecvData[13])
-			return;
-		for(int i=0;i<15;i++)
-			RecvData[i] = 0;
-		RecvCRC=0;
-	}
-	begin_index=0;
-	while (begin_index < len)
-	{
-		begin_index+=5;         //jump to data
-
-		for(int i=0;i<8;i++)
-		{
-			m_Data[data_index++] = rxdata[begin_index++];
-		}
-
-		begin_index+=2;         //jump over CRC
-	}
-
-	m_tempData[index].PANID=0xffff&m_Data[1]+((0xffff&m_Data[0])<<8);
-	begin_index=2;
-
-	for(int sensor_index = 0; sensor_index < data_index / 14; sensor_index ++)
-	{
-		m_tempData[index].dataFlag[sensor_index] = m_Data[begin_index];
-		begin_index += 1;
-
-		CString tmp_addr("12345678");
-		for(int i =0;i<8;i++)
-		{
-			tmp_addr.SetAt(i,m_Data[begin_index + i]);
-		}
-		m_tempData[index].mac_address[sensor_index] = tmp;
-		begin_index += 8;
-
-		m_tempData[index].Temp[sensor_index] = 0xffff&m_Data[begin_index+1]+((0xffff&m_Data[begin_index])<<8);
-		begin_index += 2;
-
-		m_tempData[index].battery_level[sensor_index] = m_Data[begin_index];
-		begin_index += 1;
-
-		m_tempData[index].Power[sensor_index] = 0xffff&m_Data[begin_index+1]+((0xffff&m_Data[begin_index])<<8);
-		begin_index += 2;
-
-		//here, insert data into database
-		DisturbData(index, (char)0, (char)sensor_index, 
-			m_tempData[index].Temp[sensor_index],
-			m_tempData[index].Power[sensor_index],
-			m_tempData[index].battery_level[sensor_index],
-			m_tempData[index].dataFlag[sensor_index]);
-	}
 
 	COnDrawView *pViewMainShow=(COnDrawView*)m_wndSplitter.GetPane(0,1);
 
@@ -804,11 +739,84 @@ void CMainFrame::showData(char index , int len)
 			pTmpView->v_Title[dataCount]->put_TitleText("没有数据");
 		}
 
-		pTmpView->Invalidate();
+//		pTmpView->Invalidate();
 
 //		tmp.Empty();
 		battery.Empty();
 	}
+}
+
+void CMainFrame::showData(char index , int len)
+{
+	index--;
+
+	WORD RecvCRC = 0;
+	unsigned char RecvData[15]={0};
+	unsigned char *m_Data = new unsigned char[5000];
+	memset(m_Data, 0, 5000);
+
+	int index_id =0 , begin_index = 0 ,data_index = 0,data_index_second = 0;
+	while(begin_index < len)
+	{
+		for(int i =0;i<15;i++)
+		{
+			RecvData[i] = rxdata[begin_index++];
+		}
+		RecvCRC=GetCheckCode(RecvData,13);
+
+		if ((RecvCRC&0x00ff)!=RecvData[14]||((RecvCRC&0xff00)>>8)!=RecvData[13])
+			return;
+		for(int i=0;i<15;i++)
+			RecvData[i] = 0;
+		RecvCRC=0;
+	}
+	begin_index=0;
+	while (begin_index < len)
+	{
+		begin_index+=5;         //jump to data
+
+		for(int i=0;i<8;i++)
+		{
+			m_Data[data_index++] = rxdata[begin_index++];
+		}
+
+		begin_index+=2;         //jump over CRC
+	}
+
+	m_tempData[index].PANID=0xffff&m_Data[1]+((0xffff&m_Data[0])<<8);
+	begin_index=2;
+
+	for(int sensor_index = 0; sensor_index < data_index / 14; sensor_index ++)
+	{
+		m_tempData[index].dataFlag[sensor_index] = m_Data[begin_index];
+		begin_index += 1;
+
+		CString tmp_addr("12345678");
+		for(int i =0;i<8;i++)
+		{
+			tmp_addr.SetAt(i,m_Data[begin_index + i]);
+		}
+		m_tempData[index].mac_address[sensor_index] = tmp_addr;
+		begin_index += 8;
+
+		m_tempData[index].Temp[sensor_index] = 0xffff&m_Data[begin_index+1]+((0xffff&m_Data[begin_index])<<8);
+		begin_index += 2;
+
+		m_tempData[index].battery_level[sensor_index] = m_Data[begin_index];
+		begin_index += 1;
+
+		m_tempData[index].Power[sensor_index] = 0xffff&m_Data[begin_index+1]+((0xffff&m_Data[begin_index])<<8);
+		begin_index += 2;
+
+		//here, insert data into database
+		DisturbData(index, (char)0, (char)sensor_index, 
+			m_tempData[index].Temp[sensor_index],
+			m_tempData[index].Power[sensor_index],
+			m_tempData[index].battery_level[sensor_index],
+			m_tempData[index].dataFlag[sensor_index]);
+	}
+
+	displayData((int)index);
 
 	delete []m_Data;
 }
@@ -1835,6 +1843,7 @@ void CMainFrame::ShowAllLastData(void)
 {
 	COnDrawView *pViewMainShow=(COnDrawView*)m_wndSplitter.GetPane(0,1);
 	
+	displayData(IntUSR-1);
 }
 
 

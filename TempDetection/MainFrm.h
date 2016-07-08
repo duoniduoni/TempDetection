@@ -190,6 +190,7 @@ public:
 	void resize(void);
 	void SearchReader();
 	void showData(char index , int len);
+	void displayData(int index);
 	//vector<CString> m_AllReceiveData;
 	map<CString,int> m_MacAddress[200];
 };
