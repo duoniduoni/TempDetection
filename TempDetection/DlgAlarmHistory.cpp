@@ -53,17 +53,17 @@ BOOL CDlgAlarmHistory::OnInitDialog()
 	// TODO:  在此添加额外的初始化
 	m_CtlListAlarm.DeleteAllItems();
 	m_CtlListAlarm.InsertColumn(0,"读卡器");
-	m_CtlListAlarm.InsertColumn(1,"天线");
-	m_CtlListAlarm.InsertColumn(2,"传感器");
-	m_CtlListAlarm.InsertColumn(3,"警报时间");
-	m_CtlListAlarm.InsertColumn(4,"警报温度");
-	m_CtlListAlarm.InsertColumn(5,"警报信息");
+	//m_CtlListAlarm.InsertColumn(1,"天线");
+	m_CtlListAlarm.InsertColumn(1,"传感器");
+	m_CtlListAlarm.InsertColumn(2,"警报时间");
+	m_CtlListAlarm.InsertColumn(3,"警报温度");
+	m_CtlListAlarm.InsertColumn(4,"警报信息");
 	m_CtlListAlarm.SetColumnWidth(0,70);
+	//m_CtlListAlarm.SetColumnWidth(1,70);
 	m_CtlListAlarm.SetColumnWidth(1,70);
-	m_CtlListAlarm.SetColumnWidth(2,70);
-	m_CtlListAlarm.SetColumnWidth(3,130);
-	m_CtlListAlarm.SetColumnWidth(4,100);
-	m_CtlListAlarm.SetColumnWidth(5,130);
+	m_CtlListAlarm.SetColumnWidth(2,130);
+	m_CtlListAlarm.SetColumnWidth(3,100);
+	m_CtlListAlarm.SetColumnWidth(4,130);
 	m_CtlListAlarm.SetExtendedStyle(LVS_EX_FULLROWSELECT|LVS_EX_GRIDLINES);	
 
 	m_CtlDateTimeStartTime.SetFormat("yyy-MM-dd HH:mm:ss");
@@ -85,7 +85,7 @@ void CDlgAlarmHistory::OnBnClickedButtonSearch()
 	StrStopTime.Format("%f",m_DataEnding);
 	m_CtlListAlarm.DeleteAllItems();
 	int count=0;
-	_bstr_t bstrSQLdata ="SELECT * FROM DB_Data where Notes='超限警报' and RecordTime<"+StrStopTime+" and RecordTime>"+StrStartTime+" order by DataID;";
+	_bstr_t bstrSQLdata ="SELECT ReaderID, AntID, SensorID, Temperature,RecordTime, Notes FROM DB_Data where Notes='超限警报'or Notes='掉线' and RecordTime<"+StrStopTime+" and RecordTime>"+StrStartTime+" order by DataID;";
 	_RecordsetPtr m_pRecordsetch;
 	m_pRecordsetch.CreateInstance(__uuidof(Recordset));
 	m_pRecordsetch->Open(bstrSQLdata,m_pConnection.GetInterfacePtr(),adOpenDynamic,adLockOptimistic,adCmdText);
@@ -98,21 +98,24 @@ void CDlgAlarmHistory::OnBnClickedButtonSearch()
 			CString Sensor=(LPCSTR)(_bstr_t)m_pRecordsetch->GetCollect("SensorID");
 			CString temp=(LPCSTR)(_bstr_t)m_pRecordsetch->GetCollect("Temperature");
 			CString time=(LPCSTR)(_bstr_t)m_pRecordsetch->GetCollect("RecordTime");
+			CString notes = (LPCSTR)(_bstr_t)m_pRecordsetch->GetCollect("Notes");
+
 			Reader.ReleaseBuffer();
 			Ant.ReleaseBuffer();
 			Sensor.ReleaseBuffer();
 			temp.ReleaseBuffer();
 			time.ReleaseBuffer();
+			notes.ReleaseBuffer();
 
 			COleDateTime t=atof(time);
 			CString strTime=t.Format("%Y-%m-%d %H-%M-%S");
 			m_CtlListAlarm.InsertItem(count,"");
 			m_CtlListAlarm.SetItemText(count,0,Reader);
-			m_CtlListAlarm.SetItemText(count,1,Ant);
-			m_CtlListAlarm.SetItemText(count,2,Sensor);
-			m_CtlListAlarm.SetItemText(count,3,strTime);
-			m_CtlListAlarm.SetItemText(count,4,temp);
-			m_CtlListAlarm.SetItemText(count,5,"温度超过阈值");
+			//m_CtlListAlarm.SetItemText(count,1,Ant);
+			m_CtlListAlarm.SetItemText(count,1,Sensor);
+			m_CtlListAlarm.SetItemText(count,2,strTime);
+			m_CtlListAlarm.SetItemText(count,3,temp);
+			m_CtlListAlarm.SetItemText(count,4,notes);
 			count++;
 			m_pRecordsetch->MoveNext();
 		}

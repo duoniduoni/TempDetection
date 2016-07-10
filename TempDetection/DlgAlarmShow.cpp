@@ -43,17 +43,17 @@ BOOL CDlgAlarmShow::OnInitDialog()
 	// TODO:  在此添加额外的初始化
 	m_CtlListAlarm.DeleteAllItems();
 	m_CtlListAlarm.InsertColumn(0,"读卡器");
-	m_CtlListAlarm.InsertColumn(1,"天线");
-	m_CtlListAlarm.InsertColumn(2,"传感器");
-	m_CtlListAlarm.InsertColumn(3,"警报时间");
-	m_CtlListAlarm.InsertColumn(4,"警报温度");
-	m_CtlListAlarm.InsertColumn(5,"警报信息");
+	//m_CtlListAlarm.InsertColumn(1,"天线");
+	m_CtlListAlarm.InsertColumn(1,"传感器");
+	m_CtlListAlarm.InsertColumn(2,"警报时间");
+	m_CtlListAlarm.InsertColumn(3,"警报温度");
+	m_CtlListAlarm.InsertColumn(4,"警报信息");
 	m_CtlListAlarm.SetColumnWidth(0,100);
+	//m_CtlListAlarm.SetColumnWidth(1,100);
 	m_CtlListAlarm.SetColumnWidth(1,100);
-	m_CtlListAlarm.SetColumnWidth(2,100);
+	m_CtlListAlarm.SetColumnWidth(2,170);
 	m_CtlListAlarm.SetColumnWidth(3,170);
 	m_CtlListAlarm.SetColumnWidth(4,170);
-	m_CtlListAlarm.SetColumnWidth(5,170);
 	m_CtlListAlarm.SetExtendedStyle(LVS_EX_FULLROWSELECT|LVS_EX_GRIDLINES);	
 
 	return TRUE;  // return TRUE unless you set the focus to a control

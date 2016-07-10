@@ -99,6 +99,9 @@ void CDlgSetAlarm::OnBnClickedButtonSaveAlarm()
 
 	CMainFrame *pMain=(CMainFrame *)AfxGetApp()->m_pMainWnd;
 	pMain->SendCMD(SetAlarmCMD);
+
+	AlarmTempSave[0][nIndexReader] = UpperLimit;
+	AlarmTempSave[1][nIndexReader] = LowerLimit;
 }
 
 

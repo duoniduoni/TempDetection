@@ -816,7 +816,8 @@ void CMainFrame::showData(char index , int len)
 			m_tempData[index].dataFlag[sensor_index]);
 	}
 
-	displayData((int)index);
+	if(index == IntUSR-1)
+		displayData((int)index);
 
 	delete []m_Data;
 }
@@ -1117,7 +1118,19 @@ void CMainFrame::DisturbData(char Reader,char Ant,char Sensor,int Temp ,unsigned
 	if(DataFlag==0x01)
 		strDataFlag="掉线";
 	else
-		strDataFlag="正常";
+	{
+		if(GetTemp /10 < AlarmTempSave[0][Reader] && 
+			GetTemp /10 > AlarmTempSave[1][Reader]
+			)
+		{
+			strDataFlag="正常";
+		}
+		else
+		{
+			strDataFlag="超限警报";
+		}
+	}
+
 	strReader.Format("读卡器%d",Reader),strAnt.Format("天线%d",Ant+1),strSensor.Format("传感器%d",Sensor+1);
 	InsertIntoData(RecordID,strReader,strAnt,strSensor,strTemp,strPower,strFreq,strTime,strDataFlag);
 	strPower.ReleaseBuffer();
