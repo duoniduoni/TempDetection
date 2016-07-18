@@ -85,7 +85,7 @@ void CDlgAlarmHistory::OnBnClickedButtonSearch()
 	StrStopTime.Format("%f",m_DataEnding);
 	m_CtlListAlarm.DeleteAllItems();
 	int count=0;
-	_bstr_t bstrSQLdata ="SELECT ReaderID, AntID, SensorID, Temperature,RecordTime, Notes FROM DB_Data where Notes='超限警报'or Notes='掉线' and RecordTime<"+StrStopTime+" and RecordTime>"+StrStartTime+" order by DataID;";
+	_bstr_t bstrSQLdata ="SELECT ReaderID, AntID, SensorID, Temperature,RecordTime, Notes FROM DB_Data where Notes='超限警报'or Notes='掉线' or Notes='电量不足' and RecordTime<"+StrStopTime+" and RecordTime>"+StrStartTime+" order by DataID;";
 	_RecordsetPtr m_pRecordsetch;
 	m_pRecordsetch.CreateInstance(__uuidof(Recordset));
 	m_pRecordsetch->Open(bstrSQLdata,m_pConnection.GetInterfacePtr(),adOpenDynamic,adLockOptimistic,adCmdText);

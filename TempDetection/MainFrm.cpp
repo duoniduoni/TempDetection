@@ -675,11 +675,50 @@ void CMainFrame::OnComm()
 	} 
 }
 
+void CMainFrame::freshRuntimeAlarm()
+{
+	COnDrawView *pViewMainShow=(COnDrawView*)m_wndSplitter.GetPane(0,1);
+	CDlgAlarmShow *pAlarmShow = pViewMainShow->m_sheet.pDlgAlarmShow;
+
+	pAlarmShow->deleteAllAlarm();
+	for(int index = 0; index < 30; index++)
+	{
+		for(int i=0;i<100;i++)
+		{
+			if(0==m_tempData[index].dataFlag[i])
+			{
+				if((double)m_tempData[index].Temp[i] / 10 < AlarmTempSave[0][index] && 
+					(double)m_tempData[index].Temp[i] / 10 > AlarmTempSave[1][index]
+				)
+				{
+				}
+				else
+				{
+					pAlarmShow->addAlarm(index+1, i, (double)m_tempData[index].Temp[i] / 10, "超限警报");
+				}
+
+				if(m_tempData[index].battery_level[i] < 60)
+				{
+					pAlarmShow->addAlarm(index+1, i, (double)m_tempData[index].Temp[i] / 10, "电量不足");
+				}
+			}
+			else if(1==m_tempData[index].dataFlag[i])
+			{
+				pAlarmShow->addAlarm(index+1, i, (double)m_tempData[index].Temp[i] / 10, "掉线");
+			}
+			else
+			{
+			}
+		}
+	}
+}
+
 void CMainFrame::displayData(int index)
 {
 	CString tmp("12345678"),battery,tmp_data;
 
 	COnDrawView *pViewMainShow=(COnDrawView*)m_wndSplitter.GetPane(0,1);
+	CDlgAlarmShow *pAlarmShow = pViewMainShow->m_sheet.pDlgAlarmShow;
 
 	int power_value,dataCount,pageFlagCount;
 	for(int i=0;i<100;i++)
@@ -730,7 +769,7 @@ void CMainFrame::displayData(int index)
 		{
 			pTmpView->v_Power[dataCount]->CTChart::Series(0).GetAsLinearGauge().SetValue(0);
 			pTmpView->v_Temp[dataCount]->CTChart::Series(0).GetAsNumericGauge().SetValue(888.8);
-			pTmpView->v_Title[dataCount]->put_TitleText("数据异常");
+			pTmpView->v_Title[dataCount]->put_TitleText("掉线");
 		}
 		else
 		{
@@ -809,7 +848,7 @@ void CMainFrame::showData(char index , int len)
 		begin_index += 2;
 
 		//here, insert data into database
-		DisturbData(index, (char)0, (char)sensor_index, 
+		DisturbData(index+1, (char)0, (char)sensor_index, 
 			m_tempData[index].Temp[sensor_index],
 			m_tempData[index].Power[sensor_index],
 			m_tempData[index].battery_level[sensor_index],
@@ -818,6 +857,8 @@ void CMainFrame::showData(char index , int len)
 
 	if(index == IntUSR-1)
 		displayData((int)index);
+
+	freshRuntimeAlarm();
 
 	delete []m_Data;
 }
@@ -1129,6 +1170,11 @@ void CMainFrame::DisturbData(char Reader,char Ant,char Sensor,int Temp ,unsigned
 		{
 			strDataFlag="超限警报";
 		}
+
+		if(Frequence<60)
+		{
+			strDataFlag = "电量不足";
+		}
 	}
 
 	strReader.Format("读卡器%d",Reader),strAnt.Format("天线%d",Ant+1),strSensor.Format("传感器%d",Sensor+1);
@@ -1286,9 +1332,10 @@ void CMainFrame::OnStartMem()
 		Menu_ChangeUser=FALSE;
 		Menu_ScanReader=FALSE;
 		Menu_CtlSingleReader=TRUE;
-		Menu_ShowAlarmHistory=FALSE;
-		Menu_SetAlarmTemp=TRUE;
+		Menu_ShowAlarmHistory=TRUE;
+		Menu_SetAlarmTemp=FALSE;
 		Menu_ModifyReaderID=FALSE;
+		Menu_Communicate = FALSE;
 	}else
 	{
 		AfxMessageBox("请先打开端口，再进行控制操作！");
@@ -1342,6 +1389,7 @@ void CMainFrame::OnStopMem()
 			Menu_CtlSingleReader=TRUE;
 			Menu_ShowAlarmHistory=TRUE;
 			Menu_SetAlarmTemp=TRUE;
+			Menu_Communicate = TRUE;
 			if (LoginDomainSet==0)
 			{
 				//Menu_Calibration=TRUE;

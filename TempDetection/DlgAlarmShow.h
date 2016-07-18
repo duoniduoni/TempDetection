@@ -21,6 +21,11 @@ protected:
 	DECLARE_MESSAGE_MAP()
 public:
 	virtual BOOL OnInitDialog();
+
+	void showAlarmOnTime();
+
 	CListCtrl m_CtlListAlarm;
 	afx_msg void OnSize(UINT nType, int cx, int cy);
+	void deleteAllAlarm(void);
+	void addAlarm(int reader, int sinsor, double temp, CString type);
 };

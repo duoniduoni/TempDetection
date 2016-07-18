@@ -45,15 +45,15 @@ BOOL CDlgAlarmShow::OnInitDialog()
 	m_CtlListAlarm.InsertColumn(0,"读卡器");
 	//m_CtlListAlarm.InsertColumn(1,"天线");
 	m_CtlListAlarm.InsertColumn(1,"传感器");
-	m_CtlListAlarm.InsertColumn(2,"警报时间");
-	m_CtlListAlarm.InsertColumn(3,"警报温度");
-	m_CtlListAlarm.InsertColumn(4,"警报信息");
+	//m_CtlListAlarm.InsertColumn(2,"警报时间");
+	m_CtlListAlarm.InsertColumn(2,"警报温度");
+	m_CtlListAlarm.InsertColumn(3,"警报信息");
 	m_CtlListAlarm.SetColumnWidth(0,100);
 	//m_CtlListAlarm.SetColumnWidth(1,100);
 	m_CtlListAlarm.SetColumnWidth(1,100);
+	//m_CtlListAlarm.SetColumnWidth(2,170);
 	m_CtlListAlarm.SetColumnWidth(2,170);
 	m_CtlListAlarm.SetColumnWidth(3,170);
-	m_CtlListAlarm.SetColumnWidth(4,170);
 	m_CtlListAlarm.SetExtendedStyle(LVS_EX_FULLROWSELECT|LVS_EX_GRIDLINES);	
 
 	return TRUE;  // return TRUE unless you set the focus to a control
@@ -75,4 +75,28 @@ void CDlgAlarmShow::OnSize(UINT nType, int cx, int cy)
 	} 
 
 	// TODO: 在此处添加消息处理程序代码
+}
+
+void CDlgAlarmShow::showAlarmOnTime()
+{
+}
+
+void CDlgAlarmShow::deleteAllAlarm(void)
+{
+	m_CtlListAlarm.DeleteAllItems();
+}
+
+void CDlgAlarmShow::addAlarm(int reader, int sinsor, double temp, CString type)
+{
+	CString Reader, Sensor, Temp;
+	Reader.Format("%d", reader);
+	Sensor.Format("%d", sinsor);
+	Temp.Format("%0.2f", temp);
+
+	int count = m_CtlListAlarm.GetItemCount();
+	m_CtlListAlarm.InsertItem(count,"");
+	m_CtlListAlarm.SetItemText(count,0,Reader);
+	m_CtlListAlarm.SetItemText(count,1,Sensor);
+	m_CtlListAlarm.SetItemText(count,2,Temp);
+	m_CtlListAlarm.SetItemText(count,3,type);
 }

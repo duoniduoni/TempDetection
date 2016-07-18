@@ -71,31 +71,31 @@ void CDlgSetAlarm::OnBnClickedButtonSaveAlarm()
 	}
 	if(UpperLimit >= 105)
 	{
-		SetAlarmCMD[8] = (char)(125&0x00ff);
-		SetAlarmCMD[9] = (char)((125&0xff00)>>8);
-		SetAlarmCMD[10]= (char)(125&0x00ff);
-		SetAlarmCMD[11]= (char)((125&0xff00)>>8);
+		SetAlarmCMD[9] = (char)(125&0x00ff);
+		SetAlarmCMD[8] = (char)((125&0xff00)>>8);
+		SetAlarmCMD[11]= (char)(125&0x00ff);
+		SetAlarmCMD[10]= (char)((125&0xff00)>>8);
 	}else
 	{
-		SetAlarmCMD[8] = (char)((UpperLimit+10)&0x00ff);
-		SetAlarmCMD[9] = (char)(((UpperLimit+10)&0xff00)>>8);
-		SetAlarmCMD[10]= (char)((UpperLimit+20)&0x00ff);
-		SetAlarmCMD[11]= (char)(((UpperLimit+20)&0xff00)>>8);
+		SetAlarmCMD[9] = (char)((UpperLimit+10)&0x00ff);
+		SetAlarmCMD[8] = (char)(((UpperLimit+10)&0xff00)>>8);
+		SetAlarmCMD[11]= (char)((UpperLimit+20)&0x00ff);
+		SetAlarmCMD[10]= (char)(((UpperLimit+20)&0xff00)>>8);
 	}
 	if(LowerLimit <= -30)
 	{
-		SetAlarmCMD[2] = (char)(-40&0x00ff);
-		SetAlarmCMD[3] = (char)((-40&0xff00)>>8);
+		SetAlarmCMD[3] = (char)(-40&0x00ff);
+		SetAlarmCMD[2] = (char)((-40&0xff00)>>8);
 	}else
 	{
-		SetAlarmCMD[2] = (char)((LowerLimit-10)&0x00ff);
-		SetAlarmCMD[3] = (char)(((LowerLimit-10)&0xff00)>>8);
+		SetAlarmCMD[3] = (char)((LowerLimit-10)&0x00ff);
+		SetAlarmCMD[2] = (char)(((LowerLimit-10)&0xff00)>>8);
 	}
 	SetAlarmCMD[0] = (char)(nIndexReader+1);
-	SetAlarmCMD[4] = (char)(LowerLimit&0x00ff);
-	SetAlarmCMD[5] = (char)((LowerLimit&0xff00)>>8);
-	SetAlarmCMD[6] = (char)(UpperLimit&0x00ff);
-	SetAlarmCMD[7] = (char)((UpperLimit&0xff00)>>8);
+	SetAlarmCMD[5] = (char)(LowerLimit&0x00ff);
+	SetAlarmCMD[4] = (char)((LowerLimit&0xff00)>>8);
+	SetAlarmCMD[7] = (char)(UpperLimit&0x00ff);
+	SetAlarmCMD[6] = (char)((UpperLimit&0xff00)>>8);
 
 	CMainFrame *pMain=(CMainFrame *)AfxGetApp()->m_pMainWnd;
 	pMain->SendCMD(SetAlarmCMD);
