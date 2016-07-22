@@ -70,7 +70,7 @@ void CDlgHistory::OnSize(UINT nType, int cx, int cy)
 		{  
 			CRect rs;  
 			GetClientRect(&rs);  
-			m_CtlChart.SetWindowPos(NULL,0,rs.bottom/8,rs.right,rs.bottom*7/8,SWP_SHOWWINDOW | SWP_NOZORDER); 
+			m_CtlChart.SetWindowPos(NULL,0,rs.bottom/8,rs.right - 20,rs.bottom*7/8 - 25,SWP_SHOWWINDOW | SWP_NOZORDER); 
 		}  
 	} 
 }

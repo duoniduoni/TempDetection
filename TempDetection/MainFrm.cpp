@@ -715,10 +715,15 @@ void CMainFrame::freshRuntimeAlarm()
 
 void CMainFrame::displayData(int index)
 {
+	static COLORREF oldColor = 0, warningColor = RGB(255, 0, 0);
+
 	CString tmp("12345678"),battery,tmp_data;
 
 	COnDrawView *pViewMainShow=(COnDrawView*)m_wndSplitter.GetPane(0,1);
 	CDlgAlarmShow *pAlarmShow = pViewMainShow->m_sheet.pDlgAlarmShow;
+
+	if(oldColor == 0)
+		oldColor = pViewMainShow->pSheet->pDlgMainShow->v_Title[0]->get_BackGroundColor();
 
 	int power_value,dataCount,pageFlagCount;
 	for(int i=0;i<100;i++)
@@ -764,18 +769,32 @@ void CMainFrame::displayData(int index)
 			pTmpView->v_Power[dataCount]->CTChart::Series(0).GetAsLinearGauge().SetValue(power_value);
 			pTmpView->v_Temp[dataCount]->CTChart::Series(0).GetAsNumericGauge().SetValue((double)m_tempData[index].Temp[i] / 10);
 			pTmpView->v_Title[dataCount]->put_TitleText("终端"+tmp+"："+battery+"%");
+
+			if((double)m_tempData[index].Temp[i] / 10 < AlarmTempSave[0][index] && 
+				(double)m_tempData[index].Temp[i] / 10 > AlarmTempSave[1][index]
+			)
+			{
+			}
+			else
+			{
+				pTmpView->v_Title[dataCount]->put_BackGroundColor((OLE_COLOR)oldColor);
+			}
 		}
 		else if(1==m_tempData[index].dataFlag[i])
 		{
 			pTmpView->v_Power[dataCount]->CTChart::Series(0).GetAsLinearGauge().SetValue(0);
 			pTmpView->v_Temp[dataCount]->CTChart::Series(0).GetAsNumericGauge().SetValue(888.8);
 			pTmpView->v_Title[dataCount]->put_TitleText("掉线");
+
+			pTmpView->v_Title[dataCount]->put_BackGroundColor((OLE_COLOR)warningColor);
 		}
 		else
 		{
 			pTmpView->v_Power[dataCount]->CTChart::Series(0).GetAsLinearGauge().SetValue(0);
 			pTmpView->v_Temp[dataCount]->CTChart::Series(0).GetAsNumericGauge().SetValue(0);
 			pTmpView->v_Title[dataCount]->put_TitleText("没有数据");
+
+			pTmpView->v_Title[dataCount]->put_BackGroundColor((OLE_COLOR)oldColor);
 		}
 
 //		pTmpView->Invalidate();
