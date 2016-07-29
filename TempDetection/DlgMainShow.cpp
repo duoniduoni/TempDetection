@@ -271,32 +271,13 @@ BOOL CDlgMainShow::OnInitDialog()
 	// 异常: OCX 属性页应返回 FALSE
 }
 
+extern int IntUSR;
 BOOL CDlgMainShow::OnSetActive()
 {
 	// TODO: 在此添加专用代码和/或调用基类
 	CMainFrame *pMain=(CMainFrame *)AfxGetApp()->m_pMainWnd;
-	int m_count = pMain->getPageCount();
-	int client_count = 1;
-	CString count;
-	switch(m_count)
-	{
-		case 1:
-			client_count=26;
-			break;
-		case 2:
-			client_count=51;
-			break;
-		case 3:
-			client_count=76;
-			break;
-		default:
-			break;
-	}
-	for(vector<CIpanelx*>::iterator j = v_Title.begin(); j != v_Title.end(); ++j)
-	{
-		count.Format(_T("%03d"),client_count++);
-		(*j)->put_TitleText("终端"+count+"：未知");
-	}
 
-	return CPropertyPage::OnSetActive();
+  pMain->displayData(IntUSR - 1);
+
+  return CPropertyPage::OnSetActive();
 }
