@@ -90,7 +90,7 @@ CStringArray strRPA;
 CStringArray strSPA;
 int AlarmTempSave[2][30]={0};
 int SensorPowerSet[30][4][12]={0};
-int IntUSR;
+int IntUSR = 1;
 int intUST = 200;
 double LastRecvTemp[30][4][12]={0};
 int LastRecvPower[30][4][12]={0};
@@ -751,6 +751,8 @@ void CMainFrame::displayData(int index)
 		default:
 			break;
 		}
+		if(pTmpView->GetSafeHwnd() == NULL)
+			return ;
 
 		if(0==m_tempData[index].dataFlag[i])
 		{
@@ -856,7 +858,7 @@ void CMainFrame::showData(char index , int len)
 
   //clear the data of index
   for(int i = 0; i < 100; i++)
-    m_tempData[index].dataFlag = -1;
+    m_tempData[index].dataFlag[i] = -1;
 
   //set the new data of index
 	for(int sensor_index = 0; sensor_index < data_index / 14; sensor_index ++)
@@ -1491,15 +1493,11 @@ void CMainFrame::OnRefresh()
 {
 	// TODO: 在此添加命令处理程序代码
 	COnDrawView *pViewMainShow=(COnDrawView*)m_wndSplitter.GetPane(0,1);
-	CString tmp;
-	for(int i = 0; i < 25;i++)
-	{
-		tmp.Format(_T("%03d"),i+1);
-		pViewMainShow->pSheet->pDlgMainShow->v_Power[i]->CTChart::Series(0).GetAsLinearGauge().SetValue(0);
-		pViewMainShow->pSheet->pDlgMainShow->v_Temp[i]->CTChart::Series(0).GetAsNumericGauge().SetValue(0);
-		pViewMainShow->pSheet->pDlgMainShow->v_Title[i]->put_TitleText("终端"+tmp+"：未知");
-	}
+	//clear the data of index
+	for(int i = 0; i < 100; i++)
+		m_tempData[IntUSR - 1].dataFlag[i] = -1;
 
+	displayData(IntUSR - 1);
 }
 
 

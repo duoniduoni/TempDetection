@@ -276,8 +276,8 @@ BOOL CDlgMainShow::OnSetActive()
 {
 	// TODO: 在此添加专用代码和/或调用基类
 	CMainFrame *pMain=(CMainFrame *)AfxGetApp()->m_pMainWnd;
-
-  pMain->displayData(IntUSR - 1);
+	
+	pMain->displayData(IntUSR - 1);
 
   return CPropertyPage::OnSetActive();
 }
