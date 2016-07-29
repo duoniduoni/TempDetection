@@ -774,7 +774,7 @@ void CMainFrame::displayData(int index)
 				(double)m_tempData[index].Temp[i] / 10 > AlarmTempSave[1][index]
 			)
 			{
-				pTmpView->v_Temp[dataCount]->CTChart::Series(0).GetAsNumericGauge().GetValueMarker().GetShape().GetFont().SetColor(RGB(0,0,0));
+				pTmpView->v_Temp[dataCount]->CTChart::Series(0).GetAsNumericGauge().GetValueMarker().GetShape().GetFont().SetColor(oldcolor);
 			}
 			else
 			{
@@ -795,6 +795,7 @@ void CMainFrame::displayData(int index)
 			pTmpView->v_Title[dataCount]->put_TitleText("µôÏß");
 
 			pTmpView->v_Temp[dataCount]->CTChart::Series(0).GetAsNumericGauge().GetValueMarker().GetShape().GetFont().SetColor(RGB(255,0,0));
+      pTmpView->v_Title[dataCount]->put_TitleFontColor(RGB(255, 0, 0));
 		}
 		else
 		{
@@ -802,7 +803,8 @@ void CMainFrame::displayData(int index)
 			pTmpView->v_Temp[dataCount]->CTChart::Series(0).GetAsNumericGauge().SetValue(0);
 			pTmpView->v_Title[dataCount]->put_TitleText("ÖÕ¶Ë"+tmp+"£ºÎ´Öª");
 
-			pTmpView->v_Temp[dataCount]->CTChart::Series(0).GetAsNumericGauge().GetValueMarker().GetShape().GetFont().SetColor(RGB(0,0,0));
+			pTmpView->v_Temp[dataCount]->CTChart::Series(0).GetAsNumericGauge().GetValueMarker().GetShape().GetFont().SetColor(oldcolor);
+      pTmpView->v_Title[dataCount]->put_TitleFontColor(oldcolor);
 		}
 
 //		pTmpView->Invalidate();
