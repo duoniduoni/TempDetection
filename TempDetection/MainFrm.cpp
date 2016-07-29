@@ -852,6 +852,11 @@ void CMainFrame::showData(char index , int len)
 	m_tempData[index].PANID=0xffff&m_Data[1]+((0xffff&m_Data[0])<<8);
 	begin_index=2;
 
+  //clear the data of index
+  for(int i = 0; i < 100; i++)
+    m_tempData[index].dataFlag = -1;
+
+  //set the new data of index
 	for(int sensor_index = 0; sensor_index < data_index / 14; sensor_index ++)
 	{
 		m_tempData[index].dataFlag[sensor_index] = m_Data[begin_index];
