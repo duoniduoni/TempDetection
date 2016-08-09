@@ -62,6 +62,7 @@ int CCommSplitWnd::HitTest(CPoint pt)const
 unsigned char StartCMD[15]       ={0x00,0x41,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00};
 unsigned char StopCMD[15]        ={0x00,0x42,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00};
 unsigned char CallReaderCMD[15]  ={0x00,0x43,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00};
+unsigned char SearchReaderCMD[15]  ={0x00,0x45,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00};
 unsigned char SynchronousCMD[15] ={0x00,0x66,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00};
 int pageCount = 0;
 int intCF;
@@ -841,11 +842,40 @@ void CMainFrame::showData(char index , int len)
 		RecvCRC=GetCheckCode(RecvData,13);
 
 		if ((RecvCRC&0x00ff)!=RecvData[14]||((RecvCRC&0xff00)>>8)!=RecvData[13])
+    {
+      delete []m_Data;
 			return;
+    }
 		for(int i=0;i<15;i++)
 			RecvData[i] = 0;
 		RecvCRC=0;
 	}
+
+  ///////////////////////////////////////////////////////////////////////////////////////
+  char cmd = rxdata[1];
+  if(cmd != 0x43 && cmd != 0x45)
+  {
+    delete []m_Data;
+    return ;
+  }
+
+  if(cmd == 0x45)
+  {
+    char addres = rxdata[0];
+
+    if(address < 0 || address > 30)
+    {
+      printf(" address is out of range !\n");
+    }
+    else
+    {
+      IndexReader[address] = true;
+    }
+    delete []m_Data;
+    return ;
+  }
+
+  ///////////////////////////////////////////////////////////////////////////////////////
 	begin_index=0;
 	while (begin_index < len)
 	{
@@ -1065,7 +1095,9 @@ void CMainFrame::SearchReader()
 			{
 				StartMem();
 				SearchFlag = 1;
-				SetTimer(ID_TIMER_SEARCH,45000,NULL);
+
+        for(int i = 0; i < 30 ; i++)
+          IndexReader[i] = false;
 			}
 		}
 		else
@@ -1743,10 +1775,10 @@ void CMainFrame::OnTimer(UINT_PTR nIDEvent)
 	{
 	case ID_TIMER_WAIT:
 		KillTimer(ID_TIMER_WAIT);
-		StartTimer(m_hWnd,intUST);
 		CountLoop=1;
 		SYNCount=0;
 		SendCMDStatus=TRUE;
+		StartTimer(m_hWnd,intUST);
 		break;
 	case ID_TIMER_LOOP:
 		CallReaderCMD[0]=CountLoop;
@@ -1762,6 +1794,9 @@ void CMainFrame::OnTimer(UINT_PTR nIDEvent)
 		StopMem();
 		SearchFlag = 0;
 		Invalidate();
+
+    //Fresh the tree view
+    //
 		AfxMessageBox("已完成扫描");
 		break;
 	default:
@@ -1965,117 +2000,130 @@ LRESULT CMainFrame::OnUpdateTime(WPARAM wParam,LPARAM lParam)
 	double x=((double)(llQPartNew-llQPartOld))/fFreq;
 
 	if (EnableTimer)
-	{
-		CallReaderCMD[0]=CountLoop;
-		CountLoop++;
-		if (CountLoop==31)
-		{
-			CountLoop=1;
-		}
-		if(x>(intUST-5)*0.001)
-		{
-			llQPartOld=llQPartNew;
-			SendCMD(CallReaderCMD);
-			
-		}else
-		{
-			CountLoop--;
-		}
-	}
-	return 0;
+  {
+    CallReaderCMD[0]=CountLoop;
+    SearchReaderCMD[0] = CountLoop;
+    CountLoop++;
+    if (CountLoop==31)
+    {
+      CountLoop=1;
+    }
+    if(x>(intUST-5)*0.001)
+    {
+      llQPartOld=llQPartNew;
+      if(SearchFlag == 0)     //获取温度数据
+      {
+        SendCMD(CallReaderCMD);
+      }
+      else                    //查询读卡器是否在线
+      {
+        SendCMD(SearchReaderCMD);
+
+        if(CountLoop == 31)
+        {
+          CountLoop=1;
+          SetTimer(ID_TIMER_SEARCH,2000,NULL);
+        }
+      }
+    }else
+    {
+      CountLoop--;
+    }
+  }
+  return 0;
 }
 UINT OneMilliSecondProc(LPVOID lParam)
 {
-	CMainFrame* pDlg = (CMainFrame*)lParam;
-	LARGE_INTEGER frequence, privious, current, interval; 
-	if(!QueryPerformanceFrequency( &frequence)) 
-	{ 
-		::MessageBox(NULL, "Your computer hardware doesn't support the high-resolution performance counter", 
-			"Not Support", MB_ICONEXCLAMATION | MB_OK); 
-		return 0;
-	} 
-	interval.QuadPart = frequence.QuadPart * SetTime / 1000; 
-	QueryPerformanceCounter( &current ); 
-	while(EnableTimer)
-	{
-		privious = current; 
-		while( current.QuadPart - privious.QuadPart < interval.QuadPart ) 
-			QueryPerformanceCounter(&current);
-		::SendMessage(pDlg->m_hWnd,WM_UPDATETIME,0,0);
-	}
-	return 0;
+  CMainFrame* pDlg = (CMainFrame*)lParam;
+  LARGE_INTEGER frequence, privious, current, interval; 
+  if(!QueryPerformanceFrequency( &frequence)) 
+  { 
+    ::MessageBox(NULL, "Your computer hardware doesn't support the high-resolution performance counter", 
+        "Not Support", MB_ICONEXCLAMATION | MB_OK); 
+    return 0;
+  } 
+  interval.QuadPart = frequence.QuadPart * SetTime / 1000; 
+  QueryPerformanceCounter( &current ); 
+  while(EnableTimer)
+  {
+    privious = current; 
+    while( current.QuadPart - privious.QuadPart < interval.QuadPart ) 
+      QueryPerformanceCounter(&current);
+    ::SendMessage(pDlg->m_hWnd,WM_UPDATETIME,0,0);
+  }
+  return 0;
 }
 
 
 void CMainFrame::StartMem(void)
 {
-	if (intTemp2)
-	{
-		intRDC=0;
-		//SendCMD(StartCMD);
-		Sleep(50);
-		m_MSComm.SetInBufferCount(0);
-		SetTimer(ID_TIMER_WAIT,2000,NULL);
-		intTemp=1;
-		for (int k = 0; k < 30; k++)
-		{
-			for (int i = 0; i < 4; i++)
-			{
-				for (int j = 0; j < 12; j++)
-				{
-					m_FreqData[k][i][j]=0;
-					m_TempData[k][i][j]=0;
-				}
-			}
-		}
-		for (int i = 0; i < 4; i++)
-		{
-			for (int j = 0; j < 12; j++)
-			{
-				WrongFlagCount[i][j]=0;
-			}
-		}
+  if (intTemp2)
+  {
+    intRDC=0;
+    //SendCMD(StartCMD);
+    Sleep(50);
+    m_MSComm.SetInBufferCount(0);
+    SetTimer(ID_TIMER_WAIT,2000,NULL);
+    intTemp=1;
+    for (int k = 0; k < 30; k++)
+    {
+      for (int i = 0; i < 4; i++)
+      {
+        for (int j = 0; j < 12; j++)
+        {
+          m_FreqData[k][i][j]=0;
+          m_TempData[k][i][j]=0;
+        }
+      }
+    }
+    for (int i = 0; i < 4; i++)
+    {
+      for (int j = 0; j < 12; j++)
+      {
+        WrongFlagCount[i][j]=0;
+      }
+    }
 
-		for (int i = 0; i < 30; i++)
-		{
-			for (int j = 0; j < 4; j++)
-			{
-				for (int k = 0; k < 12; k++)
-				{
-					LastRecvTemp[i][j][k]=0;
-					LastRecvPower[i][j][k]=0;
-					LastAlarmStatus[i][j][k]=0;
-				}
-			}
-		}
-	}else
-	{
-		AfxMessageBox("请先打开端口，再进行控制操作！");
-	}
+    for (int i = 0; i < 30; i++)
+    {
+      for (int j = 0; j < 4; j++)
+      {
+        for (int k = 0; k < 12; k++)
+        {
+          LastRecvTemp[i][j][k]=0;
+          LastRecvPower[i][j][k]=0;
+          LastAlarmStatus[i][j][k]=0;
+        }
+      }
+    }
+  }else
+  {
+    AfxMessageBox("请先打开端口，再进行控制操作！");
+  }
 }
 
 
 void CMainFrame::StopMem(void)
 {
-	if (intTemp2)
-	{
-		while (1)
-		{
-			if (m_MSComm.GetInBufferCount()==0)
-			{
-				StopTimer();
-				//Sleep(400);
-				//SendCMD(StopCMD);
-				Sleep(50);
-				m_MSComm.SetInBufferCount(0);
-				intTemp=0;
-				break;
-			}
-		}
-	}else
-	{
-		AfxMessageBox("请先打开端口，再进行控制操作！");
-	}
+  if (intTemp2)
+  {
+    while (1)
+    {
+      if (m_MSComm.GetInBufferCount()==0)
+      {
+        StopTimer();
+        //Sleep(400);
+        //SendCMD(StopCMD);
+        Sleep(50);
+        m_MSComm.SetInBufferCount(0);
+        intTemp=0;
+        break;
+      }
+    }
+  }else
+  {
+    AfxMessageBox("请先打开端口，再进行控制操作！");
+  }
 }
 
 
