@@ -64,7 +64,7 @@ BOOL CTempDetectionView::PreCreateWindow(CREATESTRUCT& cs)
 
 	return CFormView::PreCreateWindow(cs);
 }
-
+HTREEITEM first = NULL;
 void CTempDetectionView::OnInitialUpdate()
 {
 	CFormView::OnInitialUpdate();
@@ -96,6 +96,8 @@ void CTempDetectionView::OnInitialUpdate()
 			if (i<9)
 			{
 				HTREEITEM Child_hItem=m_TreeCtl.InsertItem(temp+"(¶Á¿¨Æ÷0"+str+")",NULL,NULL,hItem); 
+				if(i == 0)
+					first = Child_hItem;
 			}else
 			{
 				HTREEITEM Child_hItem=m_TreeCtl.InsertItem(temp+"(¶Á¿¨Æ÷"+str+")",NULL,NULL,hItem); 
@@ -220,6 +222,29 @@ void CTempDetectionView::StartMem(void)
 {
 	GetDlgItem(IDC_BUTTON_START_MEM)->EnableWindow(FALSE);
 	GetDlgItem(IDC_BUTTON_STOP_MEM)->EnableWindow(TRUE);
+
+//	m_TreeCtl.SetItemState(first,LVIS_SELECTED|LVIS_FOCUSED, 0);
+	CString str, strSelect;
+	if(first != NULL)
+	{
+		m_TreeCtl.Select(first, TVGN_CARET);
+		str = m_TreeCtl.GetItemText(first);
+	}
+	strSelect=str;
+	str=str.Right(3);
+	str=str.Left(2);
+	if (str!="µÍ"&&str!="")
+	{
+		IntUSR=atoi(str);
+		pMain->ShowPosition(IntUSR-1,TRUE);
+		//pMain->OnRefresh();
+		pMain->ShowAllLastData();
+		GetDlgItem(IDC_STATIC_SHOW_SELECT)->SetWindowText("µ±Ç°ÏÔÊ¾:"+strSelect);
+	}else
+	{
+		pMain->ShowPosition(IntUSR-1,FALSE);
+//		pMain->OnRefresh();
+	}
 }
 
 
@@ -253,7 +278,7 @@ void CTempDetectionView::OnNMClickTreeWindows(NMHDR *pNMHDR, LRESULT *pResult)
 	}else
 	{
 		pMain->ShowPosition(IntUSR-1,FALSE);
-		pMain->OnRefresh();
+//		pMain->OnRefresh();
 	}
 
 

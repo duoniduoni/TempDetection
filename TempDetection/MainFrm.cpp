@@ -363,6 +363,12 @@ int CMainFrame::OnCreate(LPCREATESTRUCT lpCreateStruct)
 	llQFreq=litmp.QuadPart;
 	fFreq=(double)llQFreq;
 
+	for(int i = 0;i < 200; i++)
+	{
+		for(int j = 0; j < 100; j++)
+			m_tempData[i].dataFlag[j] = -1;
+	}
+
 	return 0;
 }
 
@@ -794,7 +800,7 @@ void CMainFrame::displayData(int index)
 		{
 			pTmpView->v_Power[dataCount]->CTChart::Series(0).GetAsLinearGauge().SetValue(0);
 			pTmpView->v_Temp[dataCount]->CTChart::Series(0).GetAsNumericGauge().SetValue(888.8);
-			pTmpView->v_Title[dataCount]->put_TitleText("µôÏß");
+			pTmpView->v_Title[dataCount]->put_TitleText("ÖÕ¶Ë"+tmp+": µôÏß");
 
 			pTmpView->v_Temp[dataCount]->CTChart::Series(0).GetAsNumericGauge().GetValueMarker().GetShape().GetFont().SetColor(RGB(255,0,0));
       pTmpView->v_Title[dataCount]->put_TitleFontColor(RGB(255, 0, 0));
