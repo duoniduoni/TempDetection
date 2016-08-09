@@ -664,6 +664,35 @@ void CMainFrame::OnComm()
 					//	frame = (0xffff&rxdata[4])<<8;
 					//}
 
+					///////////////////////////////////////////////////////////////////////////////////////
+					bool flag = false;
+					for(int pos = 0; pos < intRDC; pos += 15)
+					{
+						char cmd = rxdata[pos + 1];
+						if(cmd != 0x43 && cmd != 0x45)
+						{
+							return ;
+						}
+
+						if(cmd == 0x45)
+						{
+							flag = true;
+							char address = rxdata[pos + 0];
+
+							if(address < 0 || address > 30)
+							{
+								printf(" address is out of range !\n");
+							}
+							else
+							{
+								IndexReader[address] = true;
+							}
+						}
+					}
+					if(flag)
+						return ;
+					///////////////////////////////////////////////////////////////////////////////////////
+
 					//靠靠靠
 					int lastFrameIndex = intRDC - 15;
 					char flagOfEndFrame = rxdata[lastFrameIndex + 4];
@@ -851,31 +880,6 @@ void CMainFrame::showData(char index , int len)
 		RecvCRC=0;
 	}
 
-  ///////////////////////////////////////////////////////////////////////////////////////
-  char cmd = rxdata[1];
-  if(cmd != 0x43 && cmd != 0x45)
-  {
-    delete []m_Data;
-    return ;
-  }
-
-  if(cmd == 0x45)
-  {
-    char addres = rxdata[0];
-
-    if(address < 0 || address > 30)
-    {
-      printf(" address is out of range !\n");
-    }
-    else
-    {
-      IndexReader[address] = true;
-    }
-    delete []m_Data;
-    return ;
-  }
-
-  ///////////////////////////////////////////////////////////////////////////////////////
 	begin_index=0;
 	while (begin_index < len)
 	{
@@ -2004,32 +2008,35 @@ LRESULT CMainFrame::OnUpdateTime(WPARAM wParam,LPARAM lParam)
     CallReaderCMD[0]=CountLoop;
     SearchReaderCMD[0] = CountLoop;
     CountLoop++;
-    if (CountLoop==31)
-    {
-      CountLoop=1;
-    }
-    if(x>(intUST-5)*0.001)
-    {
-      llQPartOld=llQPartNew;
-      if(SearchFlag == 0)     //获取温度数据
-      {
-        SendCMD(CallReaderCMD);
-      }
-      else                    //查询读卡器是否在线
-      {
-        SendCMD(SearchReaderCMD);
+    
+	if(x>(intUST-5)*0.001)
+	{
+		llQPartOld=llQPartNew;
+		if(SearchFlag == 0)     //获取温度数据
+		{
+			SendCMD(CallReaderCMD);
 
-        if(CountLoop == 31)
-        {
-          CountLoop=1;
-          SetTimer(ID_TIMER_SEARCH,2000,NULL);
-        }
-      }
-    }else
-    {
-      CountLoop--;
-    }
-  }
+			if (CountLoop==31)
+			{
+				CountLoop=1;
+			}
+		}
+		else                    //查询读卡器是否在线
+		{
+			SendCMD(SearchReaderCMD);
+
+			if(CountLoop == 31)
+			{
+				CountLoop=1;
+				StopTimer();
+				SetTimer(ID_TIMER_SEARCH,100,NULL);
+			}
+		}
+	}else
+	{
+		CountLoop--;
+	}
+	}
   return 0;
 }
 UINT OneMilliSecondProc(LPVOID lParam)
