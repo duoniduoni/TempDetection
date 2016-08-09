@@ -28,7 +28,8 @@ void CMyTreeCtl::OnNMCustomdraw(NMHDR *pNMHDR, LRESULT *pResult)
 			int i = atoi(ItemStr.Mid(ItemStr.GetLength()-3,2));
 			if(!IndexReader[i-1])
 				pNMCD->clrText = RGB(169, 169, 169); // ÉèÖÃÎÄ×ÖÑÕÉ«
-			//pNMCD->clrTextBk = RGB(0, 0, 0);
+      else
+        pNMCD->clrTextBk = RGB(0, 0, 0);
 			break;
 		}
 	}
